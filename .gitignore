@@ -1,0 +1,20 @@
+# Git Ignore file
+
+# Ignore .*/ They can only lead to trouble
+.*/
+.settings/*
+.metadata/*
+
+# Backup files
+*.edbkup
+*.bak
+*.session
+
+# Eclipse files
+.project
+.pydevproject
+
+# Compiled Python objects
+*.pyc
+*.pyo
+/desktop.ini
