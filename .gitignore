@@ -10,6 +10,9 @@
 *.bak
 *.session
 
+# Ignore JEdit working temp backup files which start and end with a " # " mark
+*#
+
 # Eclipse files
 .project
 .pydevproject
