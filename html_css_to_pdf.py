@@ -4,33 +4,45 @@
 import cStringIO
 import ho.pisa as pisa
 import os
+import urllib2
 
 # Shortcut for dumping all logs on screen
 pisa.showLogging()
 
-def HTML2PDF(data, filename, openFile=False):
+def URL2PDF(url, fileName, openFile=False):
+    
+    page = urllib2.urlopen(url)
+    data = page.read()
+    
+    return HTML2PDF(data, fileName, openFile)
 
+def HTML2PDF(data, fileName, openFile=False):
     """
     Simple test showing how to create a PDF file from
     PML Source String. Also shows errors and tries to start
     the resulting PDF
     """
 
-    with open(filename,"wb") as pdfFile:
+    # Shortcut for dumping all logs on screen
+    pisa.showLogging()
+
+    with open(fileName,"wb") as pdfFile:
         pdf = pisa.CreatePDF(
                             cStringIO.StringIO(data),
                             pdfFile)
         pdfFile.flush()
         pdfFile.close()
 
-    if openFile and (not pdf.err):
-        os.startfile(str(filename))
+    if openFile and ( not pdf.err ):
+        #os.startfile( str( fileName ) )
+        pisa.startViewer( str( fileName ) )
 
     return not pdf.err
 
 
 
 if __name__=="__main__":
+    TEST_URL = "http://docutils.sourceforge.net/docs/ref/rst/restructuredtext.html" 
     HTMLTEST = """
     <html><body>
     <p>Hello <strong style="color: #f00;">World</strong>
@@ -55,5 +67,6 @@ if __name__=="__main__":
     """
 
     HTML2PDF(HTMLTEST, "test.pdf", openFile=True)
+    URL2PDF(TEST_URL, "urltest.pdf", openFile=True)
 ## end of http://code.activestate.com/recipes/572160/ }}}
 

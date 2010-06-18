@@ -52,7 +52,7 @@ def HTML2PDF(data, fileName, openFile=False):
     with open(fileName,"wb") as pdfFile:
         pdf = pisa.CreatePDF(
                             cStringIO.StringIO(data),
-                            pdfFile)
+                            pdfFile, default_css="main.css")
         pdfFile.flush()
         pdfFile.close()
 
@@ -113,7 +113,7 @@ def printValue( varName, varVal , indentLevel = 0, indentChar = "    ",
 
 
 def getCssStyleSheets(soup):
-    
+    pass
 
 def manipulateSoup(soup, *args):
     '''    
@@ -131,12 +131,28 @@ def outputSoup( soup , fileName=None , *soupManipulationArgs ):
     # Write out the soup
     return saveSoup( soup , fileName )
 
+def outputSoupHTML2PDF(soup, pdfFileName , soupFileName = None , openFile=False, *soupManipulationArgs ):
+    
+    # Append Soup Manipulation task to remove the DOCTYPE since the PDF builder does not like it.
+    soupManipulations = list(soupManipulationArgs)
+    soupManipulations.append( lambda (soup) : 
+                                                    extractAllTags(soup, text=re.compile("^DOCTYPE html*") ) )
+    soupManipulations.append( lambda (soup) : 
+                                                    extractAllTags(soup, "link", attrs={"id" : re.compile("^css*")} ) )
+    soupManipulationArgs = tuple(soupManipulations)
+    
+    processedSoup = outputSoup( soup , soupFileName, *soupManipulationArgs)
+
+    HTML2PDF( processedSoup , pdfFileName, openFile )
+
 def outputSoupPDF(soup, pdfFileName , soupFileName = None , openFile=False, *soupManipulationArgs ):
 
     # Append Soup Manipulation task to remove the DOCTYPE since the PDF builder does not like it.
     soupManipulations = list(soupManipulationArgs)
     soupManipulations.append( lambda (soup) : 
                                                     extractAllTags(soup, text=re.compile("^DOCTYPE html*") ) )
+    soupManipulations.append( lambda (soup) : 
+                                                    extractAllTags(soup, "head" ) )
     soupManipulationArgs = tuple(soupManipulations)
     
     processedSoup = outputSoup( soup , soupFileName, *soupManipulationArgs)
@@ -1221,7 +1237,7 @@ def quickStart():
 
 if __name__ == "__main__":
     #quickStart()
-    manipulateSoup()
+#    manipulateSoup()
     print "Get the Mega soup"
     outputSoup( getMegaSoup(), "megasoup.htm", 
         lambda (soup) : extractAllTags(soup, "div", "cdAdContainer") )
@@ -1252,6 +1268,19 @@ if __name__ == "__main__":
                 { "id" : lambda(idValue): idValue in ["cdnavcontbck"] } )
         ) 
     printValue("URL Soup", os.path.exists( "urlsoup.htm" ) )
+
+    print "Get URL Soup HTML2PDF"
+    outputSoupHTML2PDF(
+        getUrlSoup(url),
+        "urlsoupHTML2PDF.pdf",
+        "urlsoupHTML2PDF.htm",
+        lambda (soup) :
+            extractAllTags(soup, "div",
+                { "class" : lambda(cssClass): cssClass in ["cdAdContainer"] } ) ,
+        lambda (soup) :
+            extractAllTags(soup, "div",
+                { "id" : lambda(idValue): idValue in ["cdnavcontbck"] } )
+        )
 
     print "Get URL Soup PDF"
     outputSoupPDF(
