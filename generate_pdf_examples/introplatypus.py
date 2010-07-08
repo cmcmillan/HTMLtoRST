@@ -49,12 +49,12 @@ for color in ["red","green","blue"]:
 #story.append(Image("http://images.devshed.com/ds/stories/PyPDF/devshed.jpg"))
 
 #address = sys.argv[1]
-address = "http://www.mono-project.com/Gendarme.Rules.BadPractice"
-html = url = urllib2.urlopen(address).read()
-soup = BeautifulSoup(html)
+# address = "http://www.mono-project.com/Gendarme.Rules.BadPractice"
+# html = url = urllib2.urlopen(address).read()
+# soup = BeautifulSoup(html)
 
-para = Paragraph(soup.prettify(), style["Normal"])
-story.append(para)
+# para = Paragraph(soup.prettify(), style["Normal"])
+# story.append(para)
 
 #story.append(soup.prettify())
 #print type(content)
